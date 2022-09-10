@@ -61,7 +61,11 @@ TEST(ECSbegin, process1)
 	scheduler.attach<Process1>( []() { std::cout << 1 << std::endl; })
 	.then<Process1>( []() { std::cout << 2 << std::endl; });
 
+
+	scheduler.attach<Process1>( [&scheduler]() { EXPECT_EQ(scheduler.size(), 2); });
+
 	while(!scheduler.empty()) {
         scheduler.update(0);
     }
+	EXPECT_EQ(scheduler.size(), 0);
 }
