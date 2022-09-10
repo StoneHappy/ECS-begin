@@ -29,6 +29,7 @@ struct Process1 : entt::process<Process1, int>
 	void update(delta_type, void*)
 	{
 		on_update();
+		succeed();
 	}
 	std::function<void()> on_update;
 	std::function<void()> on_aborted;
@@ -57,13 +58,10 @@ TEST(ECSbegin, process1)
 {
 	entt::scheduler<int> scheduler{};
 
-	scheduler.attach<Process1>( []() { std::cout << 1 << std::endl; });
-	scheduler.attach<Process1>( []() { std::cout << 2 << std::endl; });
-	scheduler.attach<Process1>( []() { std::cout << 3 << std::endl; });
-	scheduler.attach<Process1>( []() { std::cout << 4 << std::endl; });
-	scheduler.attach<Process1>( []() { std::cout << 5 << std::endl; });
-	scheduler.attach<Process1>( []() { std::cout << 6 << std::endl; });
-	scheduler.attach<Process1>( []() { std::cout << 7 << std::endl; });
+	scheduler.attach<Process1>( []() { std::cout << 1 << std::endl; })
+	.then<Process1>( []() { std::cout << 2 << std::endl; });
 
-	scheduler.update(0);
+	while(!scheduler.empty()) {
+        scheduler.update(0);
+    }
 }
